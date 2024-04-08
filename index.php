@@ -1,107 +1,190 @@
+<?php
+// Configuración de la base de datos
+$user = "ingazues";
+$server = "localhost";
+$passWord = "ZKwuHSXxm5GqrFno5CSB";
+$database = "reservasIngazu";
+// Establecer conexión a la base de datos
+$conn = new mysqli($server, $user, $passWord, $database);
+
+// Verificar conexión
+if ($conn->connect_error) {
+  die("Error de conexión: " . $conn->connect_error);
+}
+
+// Consultar todas las reservas
+$sql = "SELECT * FROM reserva";
+$result = $conn->query($sql);
+
+$reservas = array();
+
+if ($result->num_rows > 0) {
+  while ($row = $result->fetch_assoc()) {
+    $reservas[] = $row;
+  }
+} else {
+  echo "No se encontraron reservas.";
+}
+
+// Devolver los datos en formato JSON
+
+// Función para obtener detalles de una reserva específica
+function obtenerDetallesReserva($id)
+{
+  global $conn;
+  $sql = "SELECT * FROM reservas WHERE id = $id";
+  $result = $conn->query($sql);
+
+  if ($result->num_rows > 0) {
+    return $result->fetch_assoc();
+  } else {
+    return "Reserva no encontrada.";
+  }
+}
+
+// Cerrar conexión a la base de datos
+$conn->close();
+?>
+
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ingazu - Reservas</title>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-<link href="https://unpkg.com/ionicons@4.5.10-0/dist/css/ionicons.min.css" rel="stylesheet">    
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ingazu - Reservas</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://unpkg.com/ionicons@4.5.10-0/dist/css/ionicons.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 
-<style>
-body {
-  background-color: #fbfbfb;
-}
-@media (min-width: 991.98px) {
-  main {
-    padding-left: 240px;
-  }
-}
+  <style>
+    body {
+      background-color: #fbfbfb;
+    }
 
-/* Sidebar */
-.sidebar {
-  position: fixed;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  padding: 58px 0 0; /* Height of navbar */
-  box-shadow: 0 2px 5px 0 rgb(0 0 0 / 5%), 0 2px 10px 0 rgb(0 0 0 / 5%);
-  width: 240px;
-  z-index: 600;
-  transition: width 0.3s ease; /* Agregamos una transición para un cambio suave */
-}
+    @media (min-width: 991.98px) {
+      main {
+        padding-left: 240px;
+      }
+    }
 
-@media (max-width: 991.98px) {
-  .sidebar {
-    width: 20; 
-  }
-}
-#dropdownMenuButton{
-  color: yellow;
-  background-color: blue;
-}
-.form-container {
-  background-color: #fff;
-  padding: 30px;
-  border-radius: 10px;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-}
+    /* Sidebar */
+    .sidebar {
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      padding: 58px 0 0;
+      /* Height of navbar */
+      box-shadow: 0 2px 5px 0 rgb(0 0 0 / 5%), 0 2px 10px 0 rgb(0 0 0 / 5%);
+      width: 240px;
+      z-index: 600;
+      transition: width 0.3s ease;
+      /* Agregamos una transición para un cambio suave */
+    }
 
-.form-control {
-  border-radius: 20px;
-}
+    @media (max-width: 991.98px) {
+      .sidebar {
+        width: 20;
+      }
+    }
+
+    #dropdownMenuButton {
+      color: yellow;
+      background-color: blue;
+    }
+
+    .form-container {
+      background-color: #fff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-control {
+      border-radius: 20px;
+    }
 
 
-.btn-primary {
-  border-radius: 20px;
-  width: 100%;
-}
-.sidebar .active {
-  border-radius: 5px;
-  box-shadow: 0 2px 5px 0 rgb(0 0 0 / 16%), 0 2px 10px 0 rgb(0 0 0 / 12%);
-}
+    .btn-primary {
+      border-radius: 20px;
+      width: 100%;
+    }
 
-.sidebar-sticky {
-  position: relative;
-  top: 0;
-  height: calc(100vh - 48px);
-  padding-top: 0.5rem;
-  overflow-x: hidden;
-  overflow-y: auto;
-}
-#submit{
-  color: yellow;
-  margin-top: 15px;
-}
+    .sidebar .active {
+      border-radius: 5px;
+      box-shadow: 0 2px 5px 0 rgb(0 0 0 / 16%), 0 2px 10px 0 rgb(0 0 0 / 12%);
+    }
 
-#toggle-sidebar-btn {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  z-index: 1000; /* Asegura que el botón esté sobre el sidebar */
-}
+    .sidebar-sticky {
+      position: relative;
+      top: 0;
+      height: calc(100vh - 48px);
+      padding-top: 0.5rem;
+      overflow-x: hidden;
+      overflow-y: auto;
+    }
 
-section {
-  display: none;
-}
+    #submit {
+      color: yellow;
+      margin-top: 15px;
+    }
 
-section.active {
-  display: block;
-}
-</style>
+    #toggle-sidebar-btn {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      z-index: 1000;
+      /* Asegura que el botón esté sobre el sidebar */
+    }
+
+    section {
+      display: none;
+    }
+
+    .reserva-card {
+      background-color: #ffffff;
+      border: 1px solid #cccccc;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .reserva-card .info {
+      font-family: Arial, sans-serif;
+      color: #333333;
+    }
+
+    .reserva-card .info p {
+      margin: 0;
+      padding: 5px 0;
+      font-size: 16px;
+    }
+
+    .reserva-card .info p strong {
+      font-weight: bold;
+    }
+
+    section.active {
+      display: block;
+    }
+  </style>
 </head>
+
 <body>
-<!--Main Navigation-->
-<header>
-    
+  <!--Main Navigation-->
+  <header>
+
     <!-- Sidebar -->
     <nav id="sidebarMenu" class="collapse d-lg-block sidebar collapse bg-white">
       <div class="position-sticky">
         <div class="list-group list-group-flush mx-3 mt-4">
-            <a href="#nueva-reserva-section" class="list-group-item list-group-item-action py-2 ripple">
-                <i class="icon ion-md-add-circle lead mr-2"></i><span> Nueva Reserva</span></a>
-            <a href="#reservas-section" class="list-group-item list-group-item-action py-2 ripple active" aria-current="true">
-                <i class="icon ion-md-list-box lead mr-2"></i><span> Reservas</span>
+          <a href="#nueva-reserva-section" class="list-group-item list-group-item-action py-2 ripple">
+            <i class="icon ion-md-add-circle lead mr-2"></i><span> Nueva Reserva</span></a>
+          <a href="#reservas-section" class="list-group-item list-group-item-action py-2 ripple active"
+            aria-current="true">
+            <i class="icon ion-md-list-box lead mr-2"></i><span> Reservas</span>
           </a>
           <a href="#calendario-section" class="list-group-item list-group-item-action py-2 ripple">
             <i class="icon ion-md-calendar lead mr-2"></i><span> Calendario</span></a>
@@ -111,37 +194,38 @@ section.active {
       </div>
     </nav>
     <!-- Sidebar -->
-  
+
     <!-- Navbar -->
     <nav id="main-navbar" class="navbar navbar-expand-lg navbar-light bg-white fixed-top">
       <!-- Container wrapper -->
       <div class="container-fluid">
-          <!-- Brand -->
-          <a class="navbar-brand" href="#">
-              <img src="peque-logo_1.webp.png" height="25" alt="Ingazu Logo" loading="lazy" />
-          </a>
-          <!-- TITLE WEB -->
-          <p class="d-none d-md-flex input-group w-auto my-auto">Gestión de Reservas - Ingazu </p>
-  
-          <!-- Right links -->
-          <div class="dropdown">
-              <button class="btn btn-secondary dropdown-toggle" class="botonAmarilloAzul" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                  <strong>OPCIONES</strong>
-              </button>
-              <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                  <a class="dropdown-item" href="#">Perfil</a>
-                  <a class="dropdown-item" href="#">Configuración</a>
-                  <a class="dropdown-item" href="#">Cerrar sesión</a>
-              </div>
+        <!-- Brand -->
+        <a class="navbar-brand" href="#">
+          <img src="peque-logo_1.webp.png" height="25" alt="Ingazu Logo" loading="lazy" />
+        </a>
+        <!-- TITLE WEB -->
+        <p class="d-none d-md-flex input-group w-auto my-auto">Gestión de Reservas - Ingazu </p>
+
+        <!-- Right links -->
+        <div class="dropdown">
+          <button class="btn btn-secondary dropdown-toggle" class="botonAmarilloAzul" type="button"
+            id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <strong>OPCIONES</strong>
+          </button>
+          <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            <a class="dropdown-item" href="#">Perfil</a>
+            <a class="dropdown-item" href="#">Configuración</a>
+            <a class="dropdown-item" href="#">Cerrar sesión</a>
           </div>
+        </div>
       </div>
       <!-- Container wrapper -->
-  </nav>
-  
+    </nav>
+
     <!-- Navbar -->
   </header>
   <!--Main Navigation-->
-  
+
   <!--Main layout-->
   <main style="margin-top: 58px;">
     <div class="container pt-4">
@@ -187,19 +271,22 @@ section.active {
                     <div class="col-md-6">
                       <div class="form-group">
                         <label for="time">Hora:</label>
-                        <input type="text" class="form-control" id="time" name="hora" placeholder="Seleccione la hora..." required>
+                        <input type="text" class="form-control" id="time" name="hora"
+                          placeholder="Seleccione la hora..." required>
                       </div>
                     </div>
                     <div class="col-md-6">
                       <div class="form-group">
                         <label for="mesa">Mesa:</label>
-                        <input type="text" class="form-control" id="mesa" name="mesa" placeholder="Número o nombre de la mesa...">
+                        <input type="text" class="form-control" id="mesa" name="mesa"
+                          placeholder="Número o nombre de la mesa...">
                       </div>
                     </div>
                     <div class="col-md-12">
                       <div class="form-group">
                         <label for="mensaje">Mensaje:</label>
-                        <textarea class="form-control" id="mensaje" name="mensaje" rows="3" placeholder="Añadir especificaciones"></textarea>
+                        <textarea class="form-control" id="mensaje" name="mensaje" rows="3"
+                          placeholder="Añadir especificaciones"></textarea>
                       </div>
                     </div>
                   </div>
@@ -210,11 +297,40 @@ section.active {
               </div>
             </div>
           </div>
-        </div>              
+        </div>
       </section>
       <section id="reservas-section">
         <h2>Reservas</h2>
-        <p>Contenido de la sección de Reservas...</p>
+        <!-- HTML para mostrar la lista de reservas -->
+        <div class="container-fluid">
+          <div class="row">
+            <!-- Mostrar lista de reservas -->
+            
+            <!-- Mostrar detalles de la reserva seleccionada -->
+            <div class="col-md-6">
+              <h2>Detalles de Reserva</h2>
+              <div class="col-md-6">
+              <div class="reserva-card">
+                <div class="info">
+                  <p><strong>Nombre:</strong> pablo</p>
+                  <p><strong>Teléfono:</strong> 9</p>
+                  <p><strong>Email:</strong> prueba</p>
+                  <p><strong>Mesa:</strong> 5</p>
+                  <p><strong>Fecha:</strong> 2024-04-09</p>
+                  <p><strong>Hora:</strong> 00:11:00</p>
+                  <p><strong>Personas:</strong> 5</p>
+                </div>
+              </div>
+            </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- JavaScript para manejar la interactividad -->
+        <script>
+          // Aquí necesitarás utilizar JavaScript para hacer solicitudes al backend y actualizar la interfaz de usuario con la información recibida.
+        </script>
+
       </section>
       <section id="calendario-section">
         <h2>Calendario</h2>
@@ -228,36 +344,37 @@ section.active {
   </main>
   <!--Main layout-->
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.6/umd/popper.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.6/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.js"></script>
 
-<script>
-// Esperar a que el DOM esté completamente cargado
-$(document).ready(function() {
-  // Manejar clic en elementos del sidebar
-  $('.list-group-item').click(function() {
-    $('.list-group-item').removeClass('active');
-    $(this).addClass('active');
+  <script>
+    // Esperar a que el DOM esté completamente cargado
+    $(document).ready(function () {
+      // Manejar clic en elementos del sidebar
+      $('.list-group-item').click(function () {
+        $('.list-group-item').removeClass('active');
+        $(this).addClass('active');
 
-    // Obtener el ID de la sección relacionada
-    var target = $(this).attr('href');
+        // Obtener el ID de la sección relacionada
+        var target = $(this).attr('href');
 
-    // Ocultar todas las secciones
-    $('section').removeClass('active');
+        // Ocultar todas las secciones
+        $('section').removeClass('active');
 
-    // Mostrar solo la sección relacionada
-    $(target).addClass('active');
-  });
-});
+        // Mostrar solo la sección relacionada
+        $(target).addClass('active');
+      });
+    });
 
-flatpickr("#time", {
-  enableTime: true,
-  noCalendar: true,
-  dateFormat: "H:i",
-});
-</script>
+    flatpickr("#time", {
+      enableTime: true,
+      noCalendar: true,
+      dateFormat: "H:i",
+    });
+  </script>
 
 </body>
+
 </html>
