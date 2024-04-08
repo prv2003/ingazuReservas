@@ -1,4 +1,8 @@
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 // Configuración de la base de datos
 $user = "ingazues";
 $server = "localhost";
@@ -26,13 +30,12 @@ if ($result->num_rows > 0) {
   echo "No se encontraron reservas.";
 }
 
-// Devolver los datos en formato JSON
 
 // Función para obtener detalles de una reserva específica
 function obtenerDetallesReserva($id)
 {
   global $conn;
-  $sql = "SELECT * FROM reservas WHERE id = $id";
+  $sql = "SELECT * FROM reserva WHERE id = $id";
   $result = $conn->query($sql);
 
   if ($result->num_rows > 0) {
@@ -105,6 +108,31 @@ $conn->close();
       border-radius: 20px;
     }
 
+    /* Estilos para la tabla */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      border: 1px solid #ddd;
+    }
+
+    th,
+    td {
+      padding: 8px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+
+    th {
+      background-color: #f2f2f2;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f2f2f2;
+    }
+
+    tr:hover {
+      background-color: #ddd;
+    }
 
     .btn-primary {
       border-radius: 20px;
@@ -300,28 +328,47 @@ $conn->close();
         </div>
       </section>
       <section id="reservas-section">
-        <h2>Reservas</h2>
         <!-- HTML para mostrar la lista de reservas -->
+        <div class="col-md-12" id="fechas">
+        </div>
         <div class="container-fluid">
           <div class="row">
             <!-- Mostrar lista de reservas -->
-            
+            <div class="col-md-6">
+              <?php
+              echo "<table border='1'>";
+              echo "<tr><th>Nombre</th><th>Mesa</th><th>Hora</th><th>Comensales</th></tr>";
+
+              // Iterar sobre cada reserva
+              foreach ($reservas as $reserva) {
+                echo "<tr>";
+                echo "<td>" . $reserva['nombre'] . "</td>";
+                echo "<td>" . $reserva['mesa'] . "</td>";
+                echo "<td>" . $reserva['hora'] . "</td>";
+                echo "<td>" . $reserva['personas'] . "</td>";
+                echo "</tr>";
+              }
+
+              echo "</table>";
+              ?>
+            </div>
+
             <!-- Mostrar detalles de la reserva seleccionada -->
             <div class="col-md-6">
               <h2>Detalles de Reserva</h2>
               <div class="col-md-6">
-              <div class="reserva-card">
-                <div class="info">
-                  <p><strong>Nombre:</strong> pablo</p>
-                  <p><strong>Teléfono:</strong> 9</p>
-                  <p><strong>Email:</strong> prueba</p>
-                  <p><strong>Mesa:</strong> 5</p>
-                  <p><strong>Fecha:</strong> 2024-04-09</p>
-                  <p><strong>Hora:</strong> 00:11:00</p>
-                  <p><strong>Personas:</strong> 5</p>
+                <div class="reserva-card">
+                  <div class="info">
+                    <p><strong>Nombre:</strong> pablo</p>
+                    <p><strong>Teléfono:</strong> 9</p>
+                    <p><strong>Email:</strong> prueba</p>
+                    <p><strong>Mesa:</strong> 5</p>
+                    <p><strong>Fecha:</strong> 2024-04-09</p>
+                    <p><strong>Hora:</strong> 00:11:00</p>
+                    <p><strong>Personas:</strong> 5</p>
+                  </div>
                 </div>
               </div>
-            </div>
             </div>
           </div>
         </div>
@@ -378,3 +425,34 @@ $conn->close();
 </body>
 
 </html>
+<?php
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+  // Obtener los datos del formulario
+  $nombre = $_POST["nombre"];
+  $email = $_POST["email"];
+  $telefono = $_POST["telefono"];
+  $numpersonas = $_POST["numpersonas"];
+  $fecha = $_POST["fecha"];
+  $hora = $_POST["hora"];
+  $mesa = $_POST["mesa"];
+  $mensaje = $_POST["mensaje"];
+
+  $fecha_formateada = date("Y-m-d", strtotime($_POST["fecha"]));
+  $hora_formateada = date("H:i:s", strtotime($_POST["hora"]));
+
+
+  // Preparar la consulta SQL para insertar la reserva
+  $sql_insert = "INSERT INTO reserva (nombre, email, telefono, personas, fecha, hora, mesa, mensaje) 
+  VALUES ('$nombre', '$email', '$telefono', '$numpersonas', '$fecha_formateada', '$hora_formateada', '$mesa', '$mensaje')";
+
+
+  // Ejecutar la consulta
+  if ($conn->query($sql_insert) === TRUE) {
+    echo '<script>alert("Reserva creada con éxito.");</script>';
+    // Redireccionar al usuario a la página de reservas nuevamente
+    
+  } else {
+    echo "<script>alert('Error de reserva.');</script> Error al crear la reserva: " . $conn->error;
+  }
+}
+?>
