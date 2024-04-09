@@ -4,9 +4,9 @@ ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
 // Configuración de la base de datos
-$user = "ingazues";
+$user = "admin";
 $server = "localhost";
-$passWord = "ZKwuHSXxm5GqrFno5CSB";
+$passWord = "Ingazu2024.";
 $database = "reservasIngazu";
 // Establecer conexión a la base de datos
 $conn = new mysqli($server, $user, $passWord, $database);
@@ -437,8 +437,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   $mesa = $_POST["mesa"];
   $mensaje = $_POST["mensaje"];
 
-  $fecha_formateada = date("Y-m-d", strtotime($_POST["fecha"]));
-  $hora_formateada = date("H:i:s", strtotime($_POST["hora"]));
+  $fecha_formateada = date("YYYY-mm-dd", strtotime($_POST["fecha"]));
+  $hora_formateada = date("HH:ii:ss", strtotime($_POST["hora"]));
 
 
   // Preparar la consulta SQL para insertar la reserva
