@@ -27,23 +27,9 @@ if ($result->num_rows > 0) {
   while ($row = $result->fetch_assoc()) {
     $reservas[] = $row;
   }
-} else {
-  echo "No se encontraron reservas.";
 }
 
-// Función para obtener detalles de una reserva específica
-function obtenerDetallesReserva($id)
-{
-  global $conn;
-  $sql = "SELECT * FROM reserva WHERE id = $id";
-  $result = $conn->query($sql);
 
-  if ($result->num_rows > 0) {
-    return $result->fetch_assoc();
-  } else {
-    return "Reserva no encontrada.";
-  }
-}
 if ($_SERVER["REQUEST_METHOD"] == "POST" && !empty($_POST)) {
   // Obtener los datos del formulario
   $nombre = $_POST["nombre"];
@@ -67,11 +53,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !empty($_POST)) {
 
   // Ejecutar la consulta
   if ($conn->query($sql_insert) === TRUE) {
-    echo '<script>alert("Reserva creada con éxito.");</script>';
+    //echo '<script>alert("Reserva creada con éxito.");</script>';
     // Redireccionar al usuario a la página de reservas nuevamente
-
+    header("Location: {$_SERVER['REQUEST_URI']}");
+    exit();
   } else {
-    echo "<script>alert('Error de reserva.');</script> Error al crear la reserva: " . $conn->error;
+    //echo "<script>alert('Error de reserva.');</script> Error al crear la reserva: " . $conn->error;
   }
 }
 $conn->close();
@@ -450,8 +437,6 @@ $conn->close();
     $('#nueva-reserva-section').removeClass('active');
     $('#reservas-section').addClass('active');
   });
-
-  // Resto del código JavaScript
 </script>
 </body>
 
