@@ -70,9 +70,11 @@ $conn->close();
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Ingazu - Reservas</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://unpkg.com/ionicons@4.5.10-0/dist/css/ionicons.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.js"></script>
 
   <style>
     body {
@@ -274,128 +276,186 @@ $conn->close();
       <!-- Secciones -->
       <section id="reservas-section">
         <!-- HTML para mostrar la lista de reservas -->
-        <div class="col-md-12" id="fechas">
+        <!-- Dentro de la sección de reservas -->
+        <div class="text-center mb-3">
+          <!-- Botón para retroceder día -->
+          <button id="prevDay" class="btn btn-primary"><i class="icon ion-md-arrow-back"></i></button>
+          <!-- Div para mostrar la fecha actual -->
+          <div id="currentDateContainer" class="d-inline-block">
+            <span id="currentDate"></span>
+          </div>
+          <!-- Botón para avanzar día -->
+          <button id="nextDay" class="btn btn-primary"><i class="icon ion-md-arrow-forward"></i></button>
         </div>
-        <div class="container-fluid">
-          <div class="row">
-            <!-- Mostrar lista de reservas -->
-            <div class="col-md-6">
-              <?php
-              echo "<table border='1'>";
-              echo "<tr><th>Nombre</th><th>Mesa</th><th>Hora</th><th>Comensales</th></tr>";
+    </div>
 
-              // Iterar sobre cada reserva
-              foreach ($reservas as $reserva) {
-                echo "<tr>";
-                echo "<td>" . $reserva['nombre'] . "</td>";
-                echo "<td>" . $reserva['mesa'] . "</td>";
-                echo "<td>" . $reserva['hora'] . "</td>";
-                echo "<td>" . $reserva['personas'] . "</td>";
-                echo "</tr>";
-              }
+    <script>
 
-              echo "</table>";
-              ?>
+      // Inicializar Flatpickr en el div que contiene la fecha actual
+      flatpickr("#currentDateContainer", {
+        inline: true, // Mostrar el calendario en línea
+        dateFormat: "d-m-Y", // Formato de fecha dd-mm-yyyy
+        onChange: function (selectedDates, dateStr, instance) {
+          // Cuando se selecciona una fecha en el calendario, actualizar la fecha actual mostrada
+          $('#currentDate').text(dateStr);
+          // Aquí puedes agregar la lógica para cargar las reservas correspondientes a la fecha seleccionada
+        }
+      });
+      // Obtener la fecha actual en formato YYYY-mm-dd
+      var currentDate = new Date().toISOString().slice(0, 10);
+
+      // Mostrar la fecha actual en el elemento correspondiente
+      $('#currentDate').text(currentDate);
+
+      // Cargar las reservas para la fecha actual
+      //cargarReservas(currentDate);
+
+      // Manejar clic en el botón de día anterior
+      $('#prevDay').click(function () {
+        var prevDate = new Date(currentDate);
+        prevDate.setDate(prevDate.getDate() - 1);
+        currentDate = prevDate.toISOString().slice(0, 10);
+        $('#currentDate').text(currentDate);
+        //cargarReservas(currentDate);
+      });
+
+      // Manejar clic en el botón de día siguiente
+      $('#nextDay').click(function () {
+        var nextDate = new Date(currentDate);
+        nextDate.setDate(nextDate.getDate() + 1);
+        currentDate = nextDate.toISOString().slice(0, 10);
+        $('#currentDate').text(currentDate);
+        //cargarReservas(currentDate);
+      });
+
+      // Función para cargar las reservas para una fecha dada
+      //function cargarReservas(fecha) {
+      // Aquí puedes realizar la lógica para cargar las reservas correspondientes a la fecha dada
+      // Por ejemplo, puedes hacer una solicitud AJAX al servidor para obtener las reservas del día.
+      // Una vez que obtengas las reservas, actualiza la tabla u otro elemento en tu interfaz.
+      //}
+    </script>
+
+    <div class="container-fluid">
+      <div class="row">
+        <!-- Mostrar lista de reservas -->
+        <div class="col-md-6">
+          <?php
+          echo "<table border='1'>";
+          echo "<tr><th>Nombre</th><th>Mesa</th><th>Hora</th><th>Comensales</th></tr>";
+
+          // Iterar sobre cada reserva
+          foreach ($reservas as $reserva) {
+            echo "<tr>";
+            echo "<td>" . $reserva['nombre'] . "</td>";
+            echo "<td>" . $reserva['mesa'] . "</td>";
+            echo "<td>" . $reserva['hora'] . "</td>";
+            echo "<td>" . $reserva['personas'] . "</td>";
+            echo "</tr>";
+          }
+
+          echo "</table>";
+          ?>
+        </div>
+
+        <!-- Mostrar detalles de la reserva seleccionada -->
+        <div class="col-md-6">
+          <h2>Detalles de Reserva</h2>
+          <div class="col-md-6">
+            <div class="reserva-card">
+              <div class="info">
+                <p><strong>Nombre:</strong> pablo</p>
+                <p><strong>Teléfono:</strong> 9</p>
+                <p><strong>Email:</strong> prueba</p>
+                <p><strong>Mesa:</strong> 5</p>
+                <p><strong>Fecha:</strong> 2024-04-09</p>
+                <p><strong>Hora:</strong> 00:11:00</p>
+                <p><strong>Personas:</strong> 5</p>
+              </div>
             </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
-            <!-- Mostrar detalles de la reserva seleccionada -->
-            <div class="col-md-6">
-              <h2>Detalles de Reserva</h2>
-              <div class="col-md-6">
-                <div class="reserva-card">
-                  <div class="info">
-                    <p><strong>Nombre:</strong> pablo</p>
-                    <p><strong>Teléfono:</strong> 9</p>
-                    <p><strong>Email:</strong> prueba</p>
-                    <p><strong>Mesa:</strong> 5</p>
-                    <p><strong>Fecha:</strong> 2024-04-09</p>
-                    <p><strong>Hora:</strong> 00:11:00</p>
-                    <p><strong>Personas:</strong> 5</p>
+    </section>
+    <section id="nueva-reserva-section" class="active">
+      <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-md-8">
+            <div class="form-container">
+              <h2 class="text-center mb-4">NUEVA RESERVA</h2>
+              <form method="POST" action="">
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label for="nombre">Nombre:</label>
+                      <input type="text" class="form-control" id="nombre" name="nombre" required>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label for="email">Correo electrónico:</label>
+                      <input type="email" class="form-control" id="email" name="email">
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label for="telefono">Teléfono:</label>
+                      <input type="tel" class="form-control" id="telefono" name="telefono">
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label for="numpersonas">Número Comensales:</label>
+                      <input type="text" class="form-control" id="numpersonas" name="numpersonas" required>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label for="fecha">Fecha de reserva:</label>
+                      <input type="date" class="form-control" id="fecha" name="fecha" required>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label for="time">Hora:</label>
+                      <input type="text" class="form-control" id="time" name="hora" placeholder="Seleccione la hora..."
+                        required>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label for="mesa">Mesa:</label>
+                      <input type="text" class="form-control" id="mesa" name="mesa"
+                        placeholder="Número o nombre de la mesa...">
+                    </div>
+                  </div>
+                  <div class="col-md-12">
+                    <div class="form-group">
+                      <label for="mensaje">Mensaje:</label>
+                      <textarea class="form-control" id="mensaje" name="mensaje" rows="3"
+                        placeholder="Añadir especificaciones"></textarea>
+                    </div>
                   </div>
                 </div>
-              </div>
+                <div class="text-center">
+                  <button type="submit" id="submit" class="btn btn-primary"><strong>EFECTUAR RESERVA</strong></button>
+                </div>
+              </form>
             </div>
           </div>
         </div>
-
-      </section>
-      <section id="nueva-reserva-section" class="active">
-        <div class="container">
-          <div class="row justify-content-center">
-            <div class="col-md-8">
-              <div class="form-container">
-                <h2 class="text-center mb-4">NUEVA RESERVA</h2>
-                <form method="POST" action="">
-                  <div class="row">
-                    <div class="col-md-6">
-                      <div class="form-group">
-                        <label for="nombre">Nombre:</label>
-                        <input type="text" class="form-control" id="nombre" name="nombre" required>
-                      </div>
-                    </div>
-                    <div class="col-md-6">
-                      <div class="form-group">
-                        <label for="email">Correo electrónico:</label>
-                        <input type="email" class="form-control" id="email" name="email">
-                      </div>
-                    </div>
-                    <div class="col-md-6">
-                      <div class="form-group">
-                        <label for="telefono">Teléfono:</label>
-                        <input type="tel" class="form-control" id="telefono" name="telefono">
-                      </div>
-                    </div>
-                    <div class="col-md-6">
-                      <div class="form-group">
-                        <label for="numpersonas">Número Comensales:</label>
-                        <input type="text" class="form-control" id="numpersonas" name="numpersonas" required>
-                      </div>
-                    </div>
-                    <div class="col-md-6">
-                      <div class="form-group">
-                        <label for="fecha">Fecha de reserva:</label>
-                        <input type="date" class="form-control" id="fecha" name="fecha" required>
-                      </div>
-                    </div>
-                    <div class="col-md-6">
-                      <div class="form-group">
-                        <label for="time">Hora:</label>
-                        <input type="text" class="form-control" id="time" name="hora"
-                          placeholder="Seleccione la hora..." required>
-                      </div>
-                    </div>
-                    <div class="col-md-6">
-                      <div class="form-group">
-                        <label for="mesa">Mesa:</label>
-                        <input type="text" class="form-control" id="mesa" name="mesa"
-                          placeholder="Número o nombre de la mesa...">
-                      </div>
-                    </div>
-                    <div class="col-md-12">
-                      <div class="form-group">
-                        <label for="mensaje">Mensaje:</label>
-                        <textarea class="form-control" id="mensaje" name="mensaje" rows="3"
-                          placeholder="Añadir especificaciones"></textarea>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="text-center">
-                    <button type="submit" id="submit" class="btn btn-primary"><strong>EFECTUAR RESERVA</strong></button>
-                  </div>
-                </form>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-      <section id="calendario-section">
-        <h2>Calendario</h2>
-        <p>Contenido de la sección de Calendario...</p>
-      </section>
-      <section id="clientes-section">
-        <h2>Clientes</h2>
-        <p>Contenido de la sección de Clientes...</p>
-      </section>
+      </div>
+    </section>
+    <section id="calendario-section">
+      <h2>Calendario</h2>
+      <p>Contenido de la sección de Calendario...</p>
+    </section>
+    <section id="clientes-section">
+      <h2>Clientes</h2>
+      <p>Contenido de la sección de Clientes...</p>
+    </section>
     </div>
   </main>
   <!--Main layout-->
@@ -404,6 +464,7 @@ $conn->close();
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.6/umd/popper.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.js"></script>
+
 
   <script>
     // Esperar a que el DOM esté completamente cargado
@@ -431,13 +492,13 @@ $conn->close();
     });
   </script>
   <script>
-  // Esperar a que el DOM esté completamente cargado
-  $(document).ready(function () {
-    // Ocultar la sección de nueva reserva y mostrar la sección de reservas al cargar la página
-    $('#nueva-reserva-section').removeClass('active');
-    $('#reservas-section').addClass('active');
-  });
-</script>
+    // Esperar a que el DOM esté completamente cargado
+    $(document).ready(function () {
+      // Ocultar la sección de nueva reserva y mostrar la sección de reservas al cargar la página
+      $('#nueva-reserva-section').removeClass('active');
+      $('#reservas-section').addClass('active');
+    });
+  </script>
 </body>
 
 </html>
