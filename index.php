@@ -467,23 +467,23 @@ $conn->close();
 
 
   <script>
-    // Esperar a que el DOM esté completamente cargado
-    $(document).ready(function () {
-      // Manejar clic en elementos del sidebar
-      $('.list-group-item').click(function () {
-        $('.list-group-item').removeClass('active');
-        $(this).addClass('active');
+  // Esperar a que el DOM esté completamente cargado
+  $(document).ready(function () {
+    // Manejar clic en elementos del sidebar
+    $('.list-group-item').click(function () {
+      // Quitar la clase 'active' de todos los elementos del menú
+      $('.list-group-item').removeClass('active');
+      
+      // Obtener el ID de la sección relacionada
+      var target = $(this).attr('href');
 
-        // Obtener el ID de la sección relacionada
-        var target = $(this).attr('href');
+      // Ocultar todas las secciones
+      $('section').removeClass('active');
 
-        // Ocultar todas las secciones
-        $('section').removeClass('active');
-
-        // Mostrar solo la sección relacionada
-        $(target).addClass('active');
-      });
+      // Mostrar solo la sección relacionada
+      $(target).addClass('active');
     });
+  });
 
     flatpickr("#time", {
       enableTime: true,
