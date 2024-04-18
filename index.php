@@ -287,98 +287,50 @@ $conn->close();
           <!-- Botón para avanzar día -->
           <button id="nextDay" class="btn btn-primary"><i class="icon ion-md-arrow-forward"></i></button>
         </div>
-    </div>
+        <div class="container-fluid">
+          <div class="row">
+            <!-- Mostrar lista de reservas -->
+            <div class="col-md-6">
+              <?php
+              echo "<table border='1'>";
+              echo "<tr><th>Nombre</th><th>Mesa</th><th>Hora</th><th>Comensales</th></tr>";
 
-    <script>
+              // Iterar sobre cada reserva
+              foreach ($reservas as $reserva) {
+                echo "<tr>";
+                echo "<td>" . $reserva['nombre'] . "</td>";
+                echo "<td>" . $reserva['mesa'] . "</td>";
+                echo "<td>" . $reserva['hora'] . "</td>";
+                echo "<td>" . $reserva['personas'] . "</td>";
+                echo "</tr>";
+              }
 
-      // Inicializar Flatpickr en el div que contiene la fecha actual
-      flatpickr("#currentDateContainer", {
-        inline: true, // Mostrar el calendario en línea
-        dateFormat: "d-m-Y", // Formato de fecha dd-mm-yyyy
-        onChange: function (selectedDates, dateStr, instance) {
-          // Cuando se selecciona una fecha en el calendario, actualizar la fecha actual mostrada
-          $('#currentDate').text(dateStr);
-          // Aquí puedes agregar la lógica para cargar las reservas correspondientes a la fecha seleccionada
-        }
-      });
-      // Obtener la fecha actual en formato YYYY-mm-dd
-      var currentDate = new Date().toISOString().slice(0, 10);
-
-      // Mostrar la fecha actual en el elemento correspondiente
-      $('#currentDate').text(currentDate);
-
-      // Cargar las reservas para la fecha actual
-      //cargarReservas(currentDate);
-
-      // Manejar clic en el botón de día anterior
-      $('#prevDay').click(function () {
-        var prevDate = new Date(currentDate);
-        prevDate.setDate(prevDate.getDate() - 1);
-        currentDate = prevDate.toISOString().slice(0, 10);
-        $('#currentDate').text(currentDate);
-        //cargarReservas(currentDate);
-      });
-
-      // Manejar clic en el botón de día siguiente
-      $('#nextDay').click(function () {
-        var nextDate = new Date(currentDate);
-        nextDate.setDate(nextDate.getDate() + 1);
-        currentDate = nextDate.toISOString().slice(0, 10);
-        $('#currentDate').text(currentDate);
-        //cargarReservas(currentDate);
-      });
-
-      // Función para cargar las reservas para una fecha dada
-      //function cargarReservas(fecha) {
-      // Aquí puedes realizar la lógica para cargar las reservas correspondientes a la fecha dada
-      // Por ejemplo, puedes hacer una solicitud AJAX al servidor para obtener las reservas del día.
-      // Una vez que obtengas las reservas, actualiza la tabla u otro elemento en tu interfaz.
-      //}
-    </script>
-
-    <div class="container-fluid">
-      <div class="row">
-        <!-- Mostrar lista de reservas -->
-        <div class="col-md-6">
-          <?php
-          echo "<table border='1'>";
-          echo "<tr><th>Nombre</th><th>Mesa</th><th>Hora</th><th>Comensales</th></tr>";
-
-          // Iterar sobre cada reserva
-          foreach ($reservas as $reserva) {
-            echo "<tr>";
-            echo "<td>" . $reserva['nombre'] . "</td>";
-            echo "<td>" . $reserva['mesa'] . "</td>";
-            echo "<td>" . $reserva['hora'] . "</td>";
-            echo "<td>" . $reserva['personas'] . "</td>";
-            echo "</tr>";
-          }
-
-          echo "</table>";
-          ?>
-        </div>
-
-        <!-- Mostrar detalles de la reserva seleccionada -->
-        <div class="col-md-6">
-          <h2>Detalles de Reserva</h2>
-          <div class="col-md-6">
-            <div class="reserva-card">
-              <div class="info">
-                <p><strong>Nombre:</strong> pablo</p>
-                <p><strong>Teléfono:</strong> 9</p>
-                <p><strong>Email:</strong> prueba</p>
-                <p><strong>Mesa:</strong> 5</p>
-                <p><strong>Fecha:</strong> 2024-04-09</p>
-                <p><strong>Hora:</strong> 00:11:00</p>
-                <p><strong>Personas:</strong> 5</p>
+              echo "</table>";
+              ?>
+            </div>
+            <!-- Mostrar detalles de la reserva seleccionada -->
+            <div class="col-md-6">
+              <h2>Detalles de Reserva</h2>
+              <div class="col-md-6">
+                <div class="reserva-card">
+                  <div class="info">
+                    <p><strong>Nombre:</strong> pablo</p>
+                    <p><strong>Teléfono:</strong> 9</p>
+                    <p><strong>Email:</strong> prueba</p>
+                    <p><strong>Mesa:</strong> 5</p>
+                    <p><strong>Fecha:</strong> 2024-04-09</p>
+                    <p><strong>Hora:</strong> 00:11:00</p>
+                    <p><strong>Personas:</strong> 5</p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
+      </section>
     </div>
 
-    </section>
+
     <section id="nueva-reserva-section" class="active">
       <div class="container">
         <div class="row justify-content-center">
@@ -467,23 +419,31 @@ $conn->close();
 
 
   <script>
-  // Esperar a que el DOM esté completamente cargado
-  $(document).ready(function () {
-    // Manejar clic en elementos del sidebar
-    $('.list-group-item').click(function () {
-      // Quitar la clase 'active' de todos los elementos del menú
-      $('.list-group-item').removeClass('active');
-      
-      // Obtener el ID de la sección relacionada
-      var target = $(this).attr('href');
+    // Esperar a que el DOM esté completamente cargado
+    $(document).ready(function () {
+      // Manejar clic en elementos del sidebar
+      $('.list-group-item').click(function () {
+        // Remover la clase 'active' de todos los elementos del menú
+        $('.list-group-item').removeClass('active');
 
-      // Ocultar todas las secciones
-      $('section').removeClass('active');
+        // Agregar la clase 'active' solo al elemento de menú clickeado
+        $(this).addClass('active');
 
-      // Mostrar solo la sección relacionada
-      $(target).addClass('active');
+        // Obtener el ID de la sección relacionada
+        var target = $(this).attr('href');
+
+        // Ocultar todas las secciones
+        $('section').removeClass('active');
+
+        // Mostrar solo la sección relacionada
+        $(target).addClass('active');
+
+        // Si la sección activada no es la de reservas, ocultar la sección de reservas
+        if (target !== '#reservas-section') {
+          $('#reservas-section').removeClass('active');
+        }
+      });
     });
-  });
 
     flatpickr("#time", {
       enableTime: true,
@@ -497,6 +457,38 @@ $conn->close();
       // Ocultar la sección de nueva reserva y mostrar la sección de reservas al cargar la página
       $('#nueva-reserva-section').removeClass('active');
       $('#reservas-section').addClass('active');
+    });
+  </script>
+  <script>
+    // Inicializar Flatpickr en el div que contiene la fecha actual
+    flatpickr("#currentDateContainer", {
+      inline: true, // Mostrar el calendario en línea
+      dateFormat: "d-m-Y", // Formato de fecha dd-mm-yyyy
+      onChange: function (selectedDates, dateStr, instance) {
+        // Cuando se selecciona una fecha en el calendario, actualizar la fecha actual mostrada
+        $('#currentDate').text(dateStr);
+        // Aquí puedes agregar la lógica para cargar las reservas correspondientes a la fecha seleccionada
+      }
+    });
+
+    // Obtener la fecha actual en formato d-m-Y
+    var currentDate = new Date();
+
+    // Mostrar la fecha actual en el elemento correspondiente
+    $('#currentDate').text(currentDate.toLocaleDateString('es-ES'));
+
+    // Manejar clic en el botón de día anterior
+    $('#prevDay').click(function () {
+      currentDate.setDate(currentDate.getDate() - 1);
+      $('#currentDate').text(currentDate.toLocaleDateString('es-ES'));
+      //cargarReservas(currentDate);
+    });
+
+    // Manejar clic en el botón de día siguiente
+    $('#nextDay').click(function () {
+      currentDate.setDate(currentDate.getDate() + 1);
+      $('#currentDate').text(currentDate.toLocaleDateString('es-ES'));
+      //cargarReservas(currentDate);
     });
   </script>
 </body>
