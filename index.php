@@ -213,6 +213,12 @@ $conn->close();
     section.active {
       display: block;
     }
+
+    #prevDay,
+    #nextDay {
+      width: 40px;
+      /* Ajusta el ancho según sea necesario */
+    }
   </style>
 </head>
 
@@ -281,7 +287,7 @@ $conn->close();
           <!-- Botón para retroceder día -->
           <button id="prevDay" class="btn btn-primary"><i class="icon ion-md-arrow-back"></i></button>
           <!-- Div para mostrar la fecha actual -->
-          <div id="currentDateContainer" class="d-inline-block">
+          <div id="currentDateContainer" class="d-inline-block mx-3">
             <span id="currentDate"></span>
           </div>
           <!-- Botón para avanzar día -->
@@ -308,39 +314,6 @@ $conn->close();
               echo "</table>";
               ?>
             </div>
-            <script>
-              // Función para inicializar el Flatpickr cuando se haga clic en el currentDateContainer
-              $('#currentDateContainer').click(function () {
-                // Inicializar Flatpickr
-                flatpickr("#currentDateContainer", {
-                  inline: true,
-                  dateFormat: "d-m-Y",
-                  onChange: function (selectedDates, dateStr, instance) {
-                    $('#currentDate').text(dateStr);
-                    // Aquí puedes agregar la lógica para cargar las reservas correspondientes a la fecha seleccionada
-                  }
-                });
-
-                // Obtener la fecha actual y mostrarla
-                var currentDate = new Date();
-                $('#currentDate').text(currentDate.toLocaleDateString('es-ES'));
-
-                // Manejar clic en el botón de día anterior
-                $('#prevDay').click(function () {
-                  currentDate.setDate(currentDate.getDate() - 1);
-                  $('#currentDate').text(currentDate.toLocaleDateString('es-ES'));
-                  //cargarReservas(currentDate);
-                });
-
-                // Manejar clic en el botón de día siguiente
-                $('#nextDay').click(function () {
-                  currentDate.setDate(currentDate.getDate() + 1);
-                  $('#currentDate').text(currentDate.toLocaleDateString('es-ES'));
-                  //cargarReservas(currentDate);
-                });
-              });
-
-            </script>
             <!-- Mostrar detalles de la reserva seleccionada -->
             <div class="col-md-6">
               <h2>Detalles de Reserva</h2>
@@ -362,8 +335,6 @@ $conn->close();
         </div>
       </section>
     </div>
-
-
     <section id="nueva-reserva-section" class="active">
       <div class="container">
         <div class="row justify-content-center">
@@ -449,6 +420,7 @@ $conn->close();
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.6/umd/popper.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
 
 
   <script>
@@ -477,11 +449,58 @@ $conn->close();
         }
       });
     });
+  </script>
+  <script>
+    // Función para inicializar Flatpickr cuando se hace clic en el contenedor con fecha
+    $(document).ready(function () {
+      // Obtener fecha actual
+      var currentDate = new Date();
 
-    flatpickr("#time", {
-      enableTime: true,
-      noCalendar: true,
-      dateFormat: "H:i",
+      // Actualizar la fecha actual en el contenedor de fecha
+      $('#currentDate').text(currentDate.toLocaleDateString('es-ES'));
+
+      // Inicializar Flatpickr en modo dropdown, con fecha actual predeterminada 
+      var fp = flatpickr("#currentDateContainer", {
+        mode: "dropdown",
+        dateFormat: "d-m-Y",
+        conjunction: " / / ",
+        firstDayOfWeek: 1,
+        defaultDate: currentDate,
+        // Evento onChange que se activa cada vez que se selecciona una nueva fecha
+        onChange: function (selectedDates, dateStr, instance) {
+          // Actualizar la fecha actual en el contenedor de fecha
+          $('#currentDate').text(selectedDates[0].toLocaleDateString('es-ES'));
+          console.log("Selected Dates:", selectedDates);
+          console.log("Date String:", dateStr);
+          // Actualizar currentDate con la fecha seleccionada
+          currentDate = selectedDates[0];
+        }
+      });
+
+      // Botón para el día anterior
+      $('#prevDay').click(function () {
+        currentDate.setDate(currentDate.getDate() - 1);
+        updateDate(currentDate);
+      });
+
+      // Botón para el próximo día
+      $('#nextDay').click(function () {
+        currentDate.setDate(currentDate.getDate() + 1);
+        updateDate(currentDate);
+      });
+
+      // Función para actualizar la fecha
+      function updateDate(date) {
+        $('#currentDate').text(date.toLocaleDateString('es-ES'));
+        fp.setDate(date);
+      }
+
+      // Inicializar Flatpickr para el campo de hora
+      flatpickr("#time", {
+        enableTime: true,
+        noCalendar: true,
+        dateFormat: "H:i",
+      });
     });
   </script>
   <script>
@@ -492,7 +511,6 @@ $conn->close();
       $('#reservas-section').addClass('active');
     });
   </script>
-
 </body>
 
 </html>
