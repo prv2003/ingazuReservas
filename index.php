@@ -463,17 +463,12 @@ $conn->close();
       var fp = flatpickr("#currentDateContainer", {
         mode: "dropdown",
         dateFormat: "d-m-Y",
-        conjunction: " / / ",
-        firstDayOfWeek: 1,
         defaultDate: currentDate,
         // Evento onChange que se activa cada vez que se selecciona una nueva fecha
         onChange: function (selectedDates, dateStr, instance) {
           // Actualizar la fecha actual en el contenedor de fecha
-          $('#currentDate').text(selectedDates[0].toLocaleDateString('es-ES'));
-          console.log("Selected Dates:", selectedDates);
-          console.log("Date String:", dateStr);
-          // Actualizar currentDate con la fecha seleccionada
-          currentDate = selectedDates[0];
+          console.log(dateStr);
+          $('#currentDate').text(dateStr);
         }
       });
 
@@ -492,7 +487,6 @@ $conn->close();
       // Función para actualizar la fecha
       function updateDate(date) {
         $('#currentDate').text(date.toLocaleDateString('es-ES'));
-        fp.setDate(date);
       }
 
       // Inicializar Flatpickr para el campo de hora
@@ -503,6 +497,7 @@ $conn->close();
       });
     });
   </script>
+
   <script>
     // Esperar a que el DOM esté completamente cargado
     $(document).ready(function () {
