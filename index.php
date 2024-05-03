@@ -4,6 +4,8 @@ ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 session_start();
 
+//MESA • HORA • PAX • NOMBRE • TELF - estructura para imprimir
+
 // Configuración de la base de datos
 $user = "admin";
 $server = "localhost";
@@ -101,6 +103,12 @@ $conn->close();
       transition: width 0.3s ease;
       /* Agregamos una transición para un cambio suave */
     }
+
+    .reserva-card {
+      max-width: 400px;
+      margin: 0 auto;
+    }
+
 
     @media (max-width: 991.98px) {
       .sidebar {
@@ -250,7 +258,7 @@ $conn->close();
       <!-- Container wrapper -->
       <div class="container-fluid">
         <!-- Brand -->
-        <a class="navbar-brand" href="#">
+        <a class="navbar-brand" href="index.php">
           <img src="peque-logo_1.webp.png" height="25" alt="Ingazu Logo" loading="lazy" />
         </a>
         <!-- TITLE WEB -->
@@ -303,7 +311,7 @@ $conn->close();
 
               // Iterar sobre cada reserva
               foreach ($reservas as $reserva) {
-                echo "<tr>";
+                echo "<tr id='reserva-" . $reserva['reserva_id'] . "'>";
                 echo "<td>" . $reserva['nombre'] . "</td>";
                 echo "<td>" . $reserva['mesa'] . "</td>";
                 echo "<td>" . $reserva['hora'] . "</td>";
@@ -315,9 +323,10 @@ $conn->close();
               ?>
             </div>
             <!-- Mostrar detalles de la reserva seleccionada -->
-            <div class="col-md-6">
-              <h2>Detalles de Reserva</h2>
-              <div class="col-md-6">
+            <!-- Mostrar detalles de la reserva seleccionada -->
+            <div class="col-md-6 d-flex justify-content-center align-items-center">
+              <div class="text-center">
+                <h2>Detalles de Reserva</h2>
                 <div class="reserva-card">
                   <div class="info">
                     <p><strong>Nombre:</strong> </p>
@@ -476,14 +485,17 @@ $conn->close();
       $('#prevDay').click(function () {
         currentDate.setDate(currentDate.getDate() - 1);
         updateDate(currentDate);
+        // Llamar a la función para actualizar las reservas con la nueva fecha seleccionada
+        actualizarReservas(currentDate);
       });
 
       // Botón para el próximo día
       $('#nextDay').click(function () {
         currentDate.setDate(currentDate.getDate() + 1);
         updateDate(currentDate);
+        // Llamar a la función para actualizar las reservas con la nueva fecha seleccionada
+        actualizarReservas(currentDate);
       });
-
       // Función para actualizar la fecha
       function updateDate(date) {
         $('#currentDate').text(date.toLocaleDateString('es-ES'));
@@ -506,6 +518,49 @@ $conn->close();
       $('#reservas-section').addClass('active');
     });
   </script>
+  <script>
+    $(document).ready(function () {
+      // Manejar clic en las filas de la tabla de reservas
+      $('table').on('click', 'tr', function () {
+        // Obtener el ID de la reserva de la fila clickeada
+        var reservaId = $(this).attr('id').split('-')[1]; // Eliminar 'reserva-' del ID
+
+        // Obtener los detalles de la reserva con AJAX (si es necesario) y actualizar la sección de "Reserva Card"
+        $.ajax({
+          url: 'detalles_reserva.php', // URL para obtener los detalles de la reserva
+          method: 'GET',
+          data: { id: reservaId }, // Enviar el ID de la reserva
+          success: function (response) {
+            // Actualizar la sección de "Reserva Card" con los detalles de la reserva
+            $('.reserva-card .info').html(response);
+            // Mostrar la sección de "Reserva Card"
+            $('.reserva-card').show();
+          },
+          error: function () {
+            alert('Error al cargar los detalles de la reserva.');
+          }
+        });
+      });
+    });
+  </script>
+  <script>
+    // Función para actualizar las reservas con AJAX
+    function actualizarReservas(fecha) {
+      $.ajax({
+        url: 'actualizar_reservas.php', // URL para obtener las reservas actualizadas
+        method: 'GET',
+        data: { fecha: fecha.toLocaleDateString('es-ES') }, // Enviar la fecha actualizada
+        success: function (response) {
+          // Actualizar la tabla de reservas con las reservas actualizadas
+          $('#reservas-section .container-fluid').html(response);
+        },
+        error: function () {
+          alert('Error al cargar las reservas.');
+        }
+      });
+    }
+  </script>
+
 </body>
 
 </html>
