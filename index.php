@@ -19,8 +19,10 @@ if ($conn->connect_error) {
   die("Error de conexión: " . $conn->connect_error);
 }
 
+$fecha_actual = date('Y-m-d');
+
 // Consultar todas las reservas
-$sql = "SELECT * FROM reserva";
+$sql = "SELECT * FROM reserva where fecha = '$fecha_actual'";
 $result = $conn->query($sql);
 
 $reservas = array();
@@ -308,7 +310,6 @@ $conn->close();
               <?php
               echo "<table border='1'>";
               echo "<tr><th>Nombre</th><th>Mesa</th><th>Hora</th><th>Comensales</th></tr>";
-
               // Iterar sobre cada reserva
               foreach ($reservas as $reserva) {
                 echo "<tr id='reserva-" . $reserva['reserva_id'] . "'>";
